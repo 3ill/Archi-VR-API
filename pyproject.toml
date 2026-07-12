@@ -1,0 +1,62 @@
+[project]
+name = "archivr"
+version = "0.1.0"
+description = "Api for archivr"
+author = "3illbaby"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "alembic>=1.18.4",
+    "fastapi>=0.135.1",
+    "python-jose>=3.3.0",
+    "redis>=7.1.0",
+    "slowapi>=0.1.9",
+    "asyncpg>=0.31.0",
+    "commitizen>=4.11.0",
+    "celery>=5.6.2",
+    "fastapi-users[sqlalchemy]>=15.0.4",
+    "python-dotenv>=1.2.2",
+    "passlib[bcrypt]>=1.7.4",
+    "python-json-logger>=4.0.0",
+    "uvicorn[standard]>=0.41.0",
+    "pydantic-settings>=2.12.0",
+    "pytest>=9.0.2",
+    "pytest-mock>=3.15.1",
+    "pyright>=1.1.405",
+    "httpx>=0.28.1",
+    "resend>=2.26.0",
+    "boto3>=1.42.88",
+]
+
+[tool.commitizen]
+name = "cz_customize"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "uv"
+update_changelog_on_bump = true
+major_version_zero = true
+
+[tool.commitizen.customize]
+questions = [
+    { type = "list", name = "type", message = "Select the type of change", choices = [
+        { value = "feat", name = "feat: A new feature" },
+        { value = "fix", name = "fix: A bug fix" },
+        { value = "docs", name = "docs: Documentation only changes" },
+        { value = "style", name = "style: Changes that do not affect the meaning of the code" },
+        { value = "refactor", name = "refactor: A code change that neither fixes a bug nor adds a feature" },
+        { value = "revert", name = "revert: Undo changes" },
+        { value = "perf", name = "perf: A code change that improves performance" },
+        { value = "test", name = "test: Adding missing tests" },
+        { value = "chore", name = "chore: Changes to the build process or auxiliary tools" },
+        {value = "custom", name = "custom: Changes not described by other values"},
+        {value = "config", name = "config: Changes made to configurations"}
+    ]},
+    { type = "input", name = "scope", message = "What is the scope of this change? (optional, press enter to skip)" },
+    { type = "input", name = "subject", message = "Write a short, imperative tense description of the change" },
+    { type = "input", name = "body", message = "Provide a longer description of the change (optional)" },
+]
+message_template = "{{type}}{% if scope %}({{scope}}){% endif %}: {{subject}}{% if body %}\n\n{{body}}{% endif %}"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
