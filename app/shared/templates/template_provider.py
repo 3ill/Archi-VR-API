@@ -146,7 +146,7 @@ class TemplateProvider:
                                   font-weight: 600;
                                   color: #ffffff;
                                   text-decoration: none;
-                                  border-radius: 20px;
+                                  border-radius: 15px;
                                   letter-spacing: 0.3px;
                                 "
                               >
