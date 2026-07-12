@@ -1,8 +1,11 @@
-from app.shared.templates.dto.template_dto import WelcomeTemplateDto
+from app.shared.templates.dto.template_dto import WaitlistTemplateDto
 
 
 class TemplateProvider:
-    def get_waitlist_template(self, ctx: WelcomeTemplateDto):
+    def __init__(self) -> None:
+        pass
+
+    def get_waitlist_template(self, ctx: WaitlistTemplateDto):
         return f"""
         <!doctype html>
         <html lang="en">
