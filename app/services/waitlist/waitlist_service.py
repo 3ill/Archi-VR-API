@@ -10,12 +10,18 @@ from app.services.waitlist.dto.waitlist_dto import (
     AddToWaitlistResponseDto,
 )
 from app.services.waitlist.provider.waitlist_provider import WaitlistProvider
+from app.shared.dto.shared_dto import PublishEventDto
+from app.shared.event.event_definition import shared_events
+from app.shared.event.event_dispatcher import event_dispatcher
+from app.shared.service.email.dto.email_dto import SendWaitlistEmailDto
+from app.utils.event_utility import EventUtility
 
 
 class WaitlistService:
     def __init__(self, async_sessionmaker: async_sessionmaker) -> None:
         self._logger = logging.getLogger(__name__)
         self._provider = WaitlistProvider(async_sessionmaker)
+        self._event_utility = EventUtility(self._logger)
 
     async def add_user_to_waitlist(self, ctx: AddToWaitlistDto):
         try:
@@ -45,6 +51,18 @@ class WaitlistService:
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to add user to waitlist",
                 )
+
+            self._event_utility.fire_and_forget(
+                event_dispatcher.publish(
+                    ctx=PublishEventDto(
+                        event_name=shared_events.SEND_WAITLIST_EMAIL,
+                        payload=SendWaitlistEmailDto(
+                            email_to=ctx.email, first_name=ctx.first_name, url=""
+                        ),
+                    )
+                ),
+                context="waitlist_service.add_user_to_waitlist",
+            )
 
             data = AddToWaitlistData(id=str(waitlist_entry.id))
 
