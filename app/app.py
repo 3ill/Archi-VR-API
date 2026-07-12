@@ -8,6 +8,7 @@ from app.core.logger import setup_logging
 from app.core.request_id_middleware import request_id_middleware
 from app.core.security.api_key_dependency import verify_api_key
 from app.db.db import init_db_and_tables
+from app.shared.event.event_subscriber import EventSubscribers
 
 setup_logging()
 
@@ -17,6 +18,8 @@ async def lifespan(app: FastAPI):
     await init_db_and_tables()
     print("Database initialized successfully")
 
+    EventSubscribers()
+    print("Event subscription active")
     yield
 
 
