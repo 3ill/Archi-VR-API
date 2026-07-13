@@ -1,9 +1,16 @@
 import logging
 from enum import Enum
 from typing import Optional
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
+
+# Query params accepted by libpq/psycopg (e.g. sslmode, channel_binding) but not
+# understood by asyncpg's connect(), which raises TypeError if they're passed
+# through as connection kwargs. Strip them from the URL and translate them to
+# asyncpg's own `ssl` connect arg instead.
+_UNSUPPORTED_ASYNCPG_PARAMS = {"sslmode", "channel_binding"}
 
 
 class ENV(str, Enum):
@@ -25,6 +32,7 @@ class DBConfig(BaseSettings):
 
     logger: logging.Logger = Field(default_factory=lambda: logging.getLogger(__name__))
     _db_url: Optional[str] = None
+    _connect_args: dict = {}
 
     class Config:
         env_file = ".env"
@@ -59,4 +67,33 @@ class DBConfig(BaseSettings):
             )
             raise ValueError(f"No database URL found for environment: {env}")
 
+        self._db_url = self._normalize_db_url(self._db_url)
         return self._db_url
+
+    def _normalize_db_url(self, db_url: str) -> str:
+        """Strip trailing junk, force the asyncpg driver, and move any
+        libpq-only query params (sslmode, channel_binding) into connect_args,
+        since asyncpg's connect() rejects unknown keyword arguments."""
+        db_url = db_url.strip().strip("'\"")
+
+        parts = urlsplit(db_url)
+        scheme = parts.scheme
+        if scheme in ("postgres", "postgresql"):
+            scheme = "postgresql+asyncpg"
+
+        query_pairs = parse_qsl(parts.query, keep_blank_values=True)
+        kept_pairs = []
+        for key, value in query_pairs:
+            if key.lower() == "sslmode":
+                self._connect_args["ssl"] = value.lower() not in ("disable", "allow")
+            elif key.lower() in _UNSUPPORTED_ASYNCPG_PARAMS:
+                continue
+            else:
+                kept_pairs.append((key, value))
+
+        new_query = urlencode(kept_pairs)
+        return urlunsplit((scheme, parts.netloc, parts.path, new_query, parts.fragment))
+
+    def get_connect_args(self) -> dict:
+        self.get_db_url()
+        return self._connect_args
