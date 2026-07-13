@@ -23,7 +23,10 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"},
+)
 app.middleware("http")(request_id_middleware)
 
 app.include_router(api_router, prefix="/api/v1", dependencies=[Depends(verify_api_key)])
@@ -34,9 +37,9 @@ def custom_openapi():
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title="PNOC API",
+        title="Archi VR API",
         version="1.0.0",
-        description="API documentation for PNOC",
+        description="API documentation for Archi VR",
         routes=app.routes,
     )
 
