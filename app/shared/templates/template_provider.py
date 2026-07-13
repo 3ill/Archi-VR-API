@@ -134,7 +134,7 @@ class TemplateProvider:
                           <tr>
                             <td
                               align="center"
-                              style="border-radius: 6px; background-color: #262626"
+                              style="border-radius: 6px; background-color: #262626; padding: 4px"
                             >
                               <a
                                 href={ctx.url}
@@ -306,5 +306,4 @@ class TemplateProvider:
             </table>
           </body>
         </html>
-
         """
