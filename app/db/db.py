@@ -12,14 +12,20 @@ class Base(DeclarativeBase):
 
 
 config = DBConfig()
-engine = create_async_engine(config.get_db_url())
+engine = create_async_engine(
+    config.get_db_url(), connect_args=config.get_connect_args()
+)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
 @lru_cache(maxsize=1)
 def get_worker_engine():
     worker_config = DBConfig()
-    return create_async_engine(worker_config.get_db_url(), pool_pre_ping=True)
+    return create_async_engine(
+        worker_config.get_db_url(),
+        pool_pre_ping=True,
+        connect_args=worker_config.get_connect_args(),
+    )
 
 
 @lru_cache(maxsize=1)
