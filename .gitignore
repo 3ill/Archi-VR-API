@@ -12,3 +12,8 @@ wheels/
 migrations/
 .vercel
 node_modules/
+
+
+# scripts
+scripts/
+app/shared/data
