@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "axios": "^1.18.1",
-    "neverthrow": "^8.2.0"
-  }
-}
