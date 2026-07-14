@@ -10,3 +10,5 @@ wheels/
 .venv
 .env
 migrations/
+.vercel
+node_modules/

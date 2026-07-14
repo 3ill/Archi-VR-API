@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.api.v1.router import api_router
@@ -27,6 +28,20 @@ app = FastAPI(
     lifespan=lifespan,
     swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"},
 )
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://polaroid-visualizer.vercel.app",
+    "https://archivr.vercel.app",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.middleware("http")(request_id_middleware)
 
 app.include_router(api_router, prefix="/api/v1", dependencies=[Depends(verify_api_key)])
