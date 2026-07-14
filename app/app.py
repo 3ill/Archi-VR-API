@@ -31,7 +31,7 @@ app = FastAPI(
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://polaroid-visualizer.vercel.app",
-    "https://archivr.vercel.app",
+    "https://archivr-visualizer.vercel.app",
 ]
 
 app.add_middleware(
