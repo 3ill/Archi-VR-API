@@ -1,5 +1,3 @@
-import logging
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -11,7 +9,7 @@ from app.services.asset.provider.base import BaseAssetProvider
 class AssetProvider(BaseAssetProvider):
     def __init__(self, async_sessionmaker: async_sessionmaker) -> None:
         self._session_maker = async_sessionmaker
-        self._logger = logging.getLogger(__name__)
+
         super().__init__()
 
     async def upload_asset(self, ctx: UploadAssetDto) -> Asset | None:
@@ -31,10 +29,6 @@ class AssetProvider(BaseAssetProvider):
             assets = result.scalars().all()
 
             if not assets:
-                self._logger.warning(
-                    "No assets found for user",
-                    extra={"email": ctx.email},
-                )
                 return None
 
             return assets
