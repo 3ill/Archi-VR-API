@@ -114,3 +114,34 @@ class WaitlistService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Unexpected error adding user to waitlist",
             )
+
+    async def verify_waitlist_entry(self, email: str) -> bool:
+        try:
+            existing_email = await self._provider.get_waitlist_by_email(email)
+            return existing_email is not None
+        except SQLAlchemyError as exc:
+            self._logger.exception(
+                "Error verifying waitlist entry",
+                extra={
+                    "email": email,
+                    "error_type": type(exc).__name__,
+                    "error_message": str(exc),
+                },
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error verifying waitlist entry",
+            )
+        except Exception as exc:
+            self._logger.exception(
+                "Unexpected error verifying waitlist entry",
+                extra={
+                    "email": email,
+                    "error_type": type(exc).__name__,
+                    "error_message": str(exc),
+                },
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Unexpected error verifying waitlist entry",
+            )
