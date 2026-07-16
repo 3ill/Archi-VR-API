@@ -1,9 +1,10 @@
+from app.config.app_config import AppConfig
 from app.shared.templates.dto.template_dto import WaitlistTemplateDto
 
 
 class TemplateProvider:
     def __init__(self) -> None:
-        pass
+        self._appConfig = AppConfig()
 
     def get_waitlist_template(self, ctx: WaitlistTemplateDto):
         return f"""
@@ -194,7 +195,7 @@ class TemplateProvider:
                           <tr>
                             <!-- Instagram -->
                             <td style="padding: 0 12px">
-                              <a href="{{instagramUrl}}" style="text-decoration: none">
+                              <a href={self._appConfig.INSTAGRAM_URL} style="text-decoration: none">
                                 <img
                                   src="https://cdn-icons-png.flaticon.com/512/174/174855.png"
                                   alt="Instagram"
@@ -229,7 +230,7 @@ class TemplateProvider:
 
                             <!-- LinkedIn -->
                             <td style="padding: 0 12px">
-                              <a href="{{linkedinUrl}}" style="text-decoration: none">
+                              <a href={self._appConfig.LINKEDIN_URL} style="text-decoration: none">
                                 <img
                                   src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
                                   alt="LinkedIn"
