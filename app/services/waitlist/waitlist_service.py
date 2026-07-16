@@ -1,9 +1,11 @@
 import logging
+import urllib.parse
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from app.config.app_config import AppConfig
 from app.services.waitlist.dto.waitlist_dto import (
     AddToWaitlistData,
     AddToWaitlistDto,
@@ -21,6 +23,7 @@ class WaitlistService:
     def __init__(self, async_sessionmaker: async_sessionmaker) -> None:
         self._logger = logging.getLogger(__name__)
         self._provider = WaitlistProvider(async_sessionmaker)
+        self._appConfig = AppConfig()
         self._event_utility = EventUtility(self._logger)
 
     async def add_user_to_waitlist(self, ctx: AddToWaitlistDto):
@@ -52,12 +55,15 @@ class WaitlistService:
                     detail="Failed to add user to waitlist",
                 )
 
+            encoded_email = urllib.parse.quote(ctx.email)
+            url = f"{self._appConfig.APP_UPLOAD_URL}?email={encoded_email}"
+
             self._event_utility.fire_and_forget(
                 event_dispatcher.publish(
                     ctx=PublishEventDto(
                         event_name=shared_events.SEND_WAITLIST_EMAIL,
                         payload=SendWaitlistEmailDto(
-                            email_to=ctx.email, first_name=ctx.first_name, url=""
+                            email_to=ctx.email, first_name=ctx.first_name, url=url
                         ),
                     )
                 ),
