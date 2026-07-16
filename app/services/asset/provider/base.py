@@ -10,5 +10,5 @@ class BaseAssetProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_user_asset(self, ctx: FetchAssetDto) -> list[Asset]:
+    async def get_user_assets(self, ctx: FetchAssetDto) -> list[Asset] | None:
         pass
